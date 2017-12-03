@@ -15,28 +15,18 @@ import { ZkillboardService } from '../services/zkillboard';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <bc-layout>
-      <bc-sidenav [open]="showSidenav$ | async">
+      <app-sidenav [open]="showSidenav$ | async">
         <app-nav-item (navigate)="closeSidenav()" routerLink="/gangs" icon="book"
                       hint="List of current gangs in the Region">
           Gangs
         </app-nav-item>
-        <app-nav-item (navigate)="closeSidenav()" *ngIf="loggedIn$ | async" routerLink="/" icon="book"
-                      hint="View your book collection">
-          My Collection
+        <app-nav-item (navigate)="closeSidenav()" routerLink="/killmails" icon="book"
+                      hint="View Killmails">
+          Killmails
         </app-nav-item>
-        <app-nav-item (navigate)="closeSidenav()" *ngIf="loggedIn$ | async" routerLink="/books/find" icon="search"
-                      hint="Find your next book!">
-          Browse Books
-        </app-nav-item>
-        <app-nav-item (navigate)="closeSidenav()" *ngIf="!(loggedIn$ | async)">
-          Sign In
-        </app-nav-item>
-        <app-nav-item (navigate)="logout()" *ngIf="loggedIn$ | async">
-          Sign Out
-        </app-nav-item>
-      </bc-sidenav>
+      </app-sidenav>
       <bc-toolbar (openMenu)="openSidenav()">
-        Book Collection
+        EVE Monitor
       </bc-toolbar>
 
       <router-outlet></router-outlet>
@@ -50,7 +40,7 @@ export class AppComponent {
   constructor(private store: Store<fromRoot.State>,
               private zkillboard: ZkillboardService) {
 
-    this.zkillboard.connect();
+    // this.zkillboard.connect();
 
     /**
      * Selectors can be applied with the `select` operator which passes the state
