@@ -3,24 +3,19 @@ const http = require('http').Server(app);
 const https = require('https');
 const io = require('socket.io')(http);
 
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+require('./api/models/killmail');
+const Killmail = mongoose.model('Killmail');
 
-let db;
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
+  useMongoClient: true,
+});
 
 io.set('origins', 'http://localhost:4210');
 io.on('connection', () => console.log('a user connected'));
 
-MongoClient.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', (err, database) => {
-  if ( err ) return console.log(err);
-
-  db = database;
-
-  http.listen(3000, () => console.log('Listening on *:3000'));
-
-  getKillmail();
-});
-
-function getKillmail() {
+(function getKillmail() {
   https.get('https://redisq.zkillboard.com/listen.php', (res) => {
     let body = '';
 
@@ -38,11 +33,15 @@ function getKillmail() {
           killmail: payload.package.killmail,
         });
 
-        db.collection('killmails').insertOne(payload.package.killmail, (err, result) => {
-          if (err) return console.log(err);
+        const killmail = new Killmail(payload.package.killmail);
 
-          console.log(`Killmail ${payload.package.killID} inserted to collection.`);
-        });
+        killmail.save()
+          .then(() => {
+            console.log(`Killmail ${payload.package.killID} INSERTED to collection.`);
+          })
+          .catch(e => {
+            console.log(`Killmail ${payload.package.killID} was NOT INSERTED to collection.`);
+          });
       }
 
 
@@ -51,4 +50,4 @@ function getKillmail() {
   }).on('error', (e) => {
     console.error(e);
   });
-}
+})();
