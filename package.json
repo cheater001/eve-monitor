@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "server": "node src/server/app.js"
+    "server": "node src/server/app.js",
+    "api": "nodemon src/server/api.js"
   },
   "private": true,
   "dependencies": {
@@ -31,9 +32,12 @@
     "@ngrx/router-store": "4.1.1",
     "@ngrx/store": "4.1.1",
     "@ngrx/store-devtools": "4.1.1",
+    "body-parser": "^1.18.2",
     "core-js": "^2.4.1",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "mongodb": "^2.2.33",
+    "mongoose": "^4.13.6",
     "rxjs": "^5.5.2",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
@@ -56,6 +60,7 @@
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "ngrx-store-freeze": "^0.2.0",
+    "nodemon": "^1.12.1",
     "protractor": "~5.1.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
