@@ -15,6 +15,10 @@ mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
 io.set('origins', 'http://localhost:4210');
 io.on('connection', () => console.log('a user connected'));
 
+http.listen(3000, function(){
+  console.log('Listening on *:3000');
+});
+
 (function getKillmail() {
   https.get('https://redisq.zkillboard.com/listen.php', (res) => {
     let body = '';

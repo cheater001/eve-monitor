@@ -49,7 +49,7 @@ export class KillmailsPageComponent implements OnInit {
       filter: {
         // killmail_id: 66392521,
         killmail_time: {
-          $lt: start.toISOString(),
+          $gt: start.toISOString(),
           // $lt: 66,
         },
         // killmail_id: {
