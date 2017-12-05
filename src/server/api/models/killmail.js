@@ -11,6 +11,10 @@ const KillmailSchema = new Schema({
   solar_system_id: {
     type: Number,
   },
+  victim: Schema.Types.Mixed,
+  attackers: Schema.Types.Mixed,
+  zkb: Schema.Types.Mixed,
 });
+
 
 module.exports = mongoose.model('Killmail', KillmailSchema);
