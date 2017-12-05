@@ -30,6 +30,8 @@ function getKillmail() {
     res.on('end', function () {
       let payload = JSON.parse(body);
 
+      payload.killmail_time = new Date(payload.killmail_time);
+
       if ( payload.package ) {
         io.emit('killmail', {
           killID: payload.package.killID,
