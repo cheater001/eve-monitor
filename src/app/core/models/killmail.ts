@@ -2,6 +2,7 @@ export interface Killmail {
   killmail_id: number;
   killmail_time: string;
   solar_system_id: number;
+  war_id: number;
 
   victim: Victim;
   attackers: Attacker[];
