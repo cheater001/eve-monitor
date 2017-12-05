@@ -5,6 +5,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/toArray';
+import 'rxjs/add/operator/reduce';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Effect, Actions } from '@ngrx/effects';
@@ -55,6 +56,8 @@ export class KillmailsCollectionEffects {
     .switchMap(params => {
       const predicates = [];
       const filter     = params.filter;
+      const limit      = params.limit;
+      const skip       = params.skip;
       const values     = (k, value) => ({k, v: JSON.parse(JSON.stringify(value))});
       const predicate  = (key, value, handler) => {
         return (({k, v}) => {
@@ -120,26 +123,19 @@ export class KillmailsCollectionEffects {
             params: new HttpParams()
               .set('cached', JSON.stringify(killmailIds))
               .set('filters', JSON.stringify(filter))
+              .set('limit', JSON.stringify(limit))
+              .set('skip', JSON.stringify(skip))
           })
             .switchMap((killmails: Killmail[]) => {
               return this.db
                 .insert('killmails', killmails)
-                .map(() => new killmailCollection.GetSuccess(killmails))
+                .reduce((acc, curr) => [...acc, curr], [])
+                .map((items) => {
+                  return new killmailCollection.AddKillmailsSuccess(items);
+                })
                 .catch((err) => of(new killmailCollection.GetFail(err)));
             });
-        })
-        .catch(error => of(new killmailCollection.GetFail(error)));
-    });
-
-  @Effect()
-  addKillmailToCollection$: Observable<Action> = this.actions$
-    .ofType(killmailCollection.ADD_KILLMAILS)
-    .map((action: killmailCollection.AddKillmails) => action.payload)
-    .mergeMap(killmail => {
-      return this.db
-        .insert('killmails', [killmail])
-        .map(() => new killmailCollection.AddKillmailsSuccess(killmail))
-        .catch(() => of(new killmailCollection.AddKillmailsFail(killmail)));
+        });
     });
 
   constructor(private actions$: Actions,

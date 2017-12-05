@@ -47,7 +47,6 @@ export function reducer(state = initialState, action: killmailsCollection.Action
     }
 
     case killmailsCollection.ADD_KILLMAILS: {
-      console.log(action.payload);
       return {
         ...adapter.addMany(action.payload, state),
         selectedKillmailId: state.selectedKillmailId,
