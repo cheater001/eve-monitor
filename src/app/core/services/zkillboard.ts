@@ -33,7 +33,7 @@ export class ZkillboardService {
     this.socket = io(environment.socket_path);
 
     this.socket.on('killmail', killmail => {
-      this.store.dispatch(new killmailsCollection.AddKillmail(killmail.killmail));
+      // this.store.dispatch(new killmailsCollection.AddKillmail(killmail.killmail));
     });
   }
 

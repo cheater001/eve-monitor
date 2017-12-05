@@ -40,7 +40,7 @@ export class AppComponent {
   constructor(private store: Store<fromRoot.State>,
               private zkillboard: ZkillboardService) {
 
-    // this.zkillboard.connect();
+    this.zkillboard.connect();
 
     /**
      * Selectors can be applied with the `select` operator which passes the state

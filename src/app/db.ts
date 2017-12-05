@@ -8,8 +8,7 @@ export const schema: DBSchema = {
   name: 'eve_monitor_app',
   stores: {
     killmails: {
-      autoIncrement: true,
-      primaryKey: 'id',
+      primaryKey: 'killmail_id',
     },
   },
 };

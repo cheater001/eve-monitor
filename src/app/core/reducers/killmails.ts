@@ -38,16 +38,18 @@ export const initialState: State = adapter.getInitialState({
 
 export function reducer(state = initialState, action: killmailsCollection.Actions): State {
   switch (action.type) {
-    case killmailsCollection.LOAD_SUCCESS: {
+    case killmailsCollection.LOAD_SUCCESS:
+    case killmailsCollection.GET_SUCCESS: {
       return {
         ...adapter.addMany(action.payload, state),
         selectedKillmailId: state.selectedKillmailId,
       };
     }
 
-    case killmailsCollection.ADD_KILLMAIL: {
+    case killmailsCollection.ADD_KILLMAILS: {
+      console.log(action.payload);
       return {
-        ...adapter.addOne(action.payload, state),
+        ...adapter.addMany(action.payload, state),
         selectedKillmailId: state.selectedKillmailId,
       };
     }

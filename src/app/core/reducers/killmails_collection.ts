@@ -14,14 +14,16 @@ const initialState: State = {
 
 export function reducer(state = initialState, action: killmails.Actions): State {
   switch (action.type) {
-    case killmails.LOAD: {
+    case killmails.LOAD:
+    case killmails.GET: {
       return {
         ...state,
         loading: true,
       };
     }
 
-    case killmails.LOAD_SUCCESS: {
+    case killmails.LOAD_SUCCESS:
+    case killmails.GET_SUCCESS: {
       return {
         loaded: true,
         loading: false,
@@ -29,21 +31,18 @@ export function reducer(state = initialState, action: killmails.Actions): State 
       };
     }
 
-    case killmails.ADD_KILLMAIL_SUCCESS: {
-      if (state.ids.indexOf(action.payload.killmail_id) > -1) {
-        return state;
-      }
+    case killmails.ADD_KILLMAILS_SUCCESS: {
+      const ids = action.payload.reduce((acc, killmail) => {
+        if (state.ids.indexOf(killmail.killmail_id) === -1) {
+          acc.push(killmail.killmail_id);
+        }
+
+        return acc;
+      }, []);
 
       return {
         ...state,
-        ids: [...state.ids, action.payload.killmail_id],
-      };
-    }
-
-    case killmails.ADD_KILLMAIL_FAIL: {
-      return {
-        ...state,
-        ids: state.ids.filter(id => id !== action.payload.killmail_id),
+        ids: [...state.ids, ...ids],
       };
     }
 
