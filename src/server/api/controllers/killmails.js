@@ -2,22 +2,23 @@ const mongoose = require('mongoose');
 const Killmail = mongoose.model('Killmail');
 
 exports.listAllKillmails = function (req, res) {
-
-  const skip = parseInt(req.query.skip) || 0;
-  const limit = parseFloat(req.query.limit) || 10;
-  const fields = req.query.fields || 'killmail_id';
-  const filters = JSON.parse(req.query.filters || {});
-  const cached = JSON.parse(req.query.cached);
+  const skip = req.body.skip || 0;
+  const limit = req.body.limit || 10;
+  const fields = req.body.fields;
+  const filters = req.body.filters || {};
+  const cached = req.body.cached;
 
   let query = Killmail.find(filters)
     .skip(skip)
-    .limit(limit)
-    .select(fields);
+    .limit(limit);
 
-  // if (cached.length) {
-  //   query.where('killmail_id').ne(cached);
-  // }
+  if (fields) {
+    query.select(fields);
+  }
 
+  if (cached) {
+    query.where('killmail_id').nin(cached);
+  }
 
   query.exec((err, data) => {
     if ( err ) {

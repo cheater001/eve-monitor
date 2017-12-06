@@ -23,7 +23,7 @@ export class KillmailsPageComponent implements OnInit {
 
   constructor(private store: Store<fromKillmails.State>,
               private http: HttpClient) {
-    // this.killmails$ = store.select(fromRoot.getKillmailCollection);
+    this.killmails$ = store.select(fromRoot.getKillmailCollection);
   }
 
   ngOnInit() {
@@ -44,14 +44,14 @@ export class KillmailsPageComponent implements OnInit {
     const start = new Date((new Date).setHours(0, 0, 0, 0));
 
     this.store.dispatch(new killmailsCollection.Get({
-      // skip: 0,
-      // limit: 20,
+      skip: 30,
+      limit: 20,
+      // fields: 'killmail_time',
       filter: {
         // killmail_id: 66392521,
-        killmail_time: {
-          $gt: start.toISOString(),
-          // $lt: 66,
-        },
+        // killmail_time: {
+        //   $gt: start.toISOString(),
+        // },
         // killmail_id: {
         //   $gt: 66392521
         // },

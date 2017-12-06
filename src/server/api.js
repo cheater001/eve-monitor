@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 
 app.route('/killmails')
-  .get(killmails.listAllKillmails);
+  .post(killmails.listAllKillmails);
 
 app.route('/killmails/:killmail_id')
   .get(killmails.readKillmail);

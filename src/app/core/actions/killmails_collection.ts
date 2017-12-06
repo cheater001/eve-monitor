@@ -22,7 +22,7 @@ export class AddKillmails implements Action {
 export class AddKillmailsSuccess implements Action {
   readonly type = ADD_KILLMAILS_SUCCESS;
 
-  constructor(public payload: Killmail[]) {}
+  constructor(public payload: number[]) {}
 }
 
 export class AddKillmailsFail implements Action {

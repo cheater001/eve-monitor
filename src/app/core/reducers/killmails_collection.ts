@@ -32,17 +32,10 @@ export function reducer(state = initialState, action: killmails.Actions): State 
     }
 
     case killmails.ADD_KILLMAILS_SUCCESS: {
-      const ids = action.payload.reduce((acc, killmail) => {
-        if (state.ids.indexOf(killmail.killmail_id) === -1) {
-          acc.push(killmail.killmail_id);
-        }
-
-        return acc;
-      }, []);
-
+      console.log(action.payload);
       return {
         ...state,
-        ids: [...state.ids, ...ids],
+        ids: action.payload,
       };
     }
 

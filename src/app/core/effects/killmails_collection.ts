@@ -53,11 +53,13 @@ export class KillmailsCollectionEffects {
   getKillmails$: Observable<Action> = this.actions$
     .ofType(killmailCollection.GET)
     .map((action: killmailCollection.Get) => action.payload)
-    .switchMap(params => {
+    .switchMap(payload => {
       const predicates = [];
-      const filter     = params.filter;
-      const limit      = params.limit;
-      const skip       = params.skip;
+      // TODO need to import default values from backend models
+      const filter     = payload.filter;
+      const limit      = payload.limit || 10;
+      const skip       = payload.skip;
+      const fields     = payload.fields;
       const values     = (k, value) => ({k, v: JSON.parse(JSON.stringify(value))});
       const predicate  = (key, value, handler) => {
         return (({k, v}) => {
@@ -119,19 +121,16 @@ export class KillmailsCollectionEffects {
         .toArray()
         .map((killmails: Killmail[]) => killmails.map(killmail => killmail.killmail_id))
         .switchMap((killmailIds: number[]) => {
-          return this.http.get<Killmail[]>(`${environment.api_path}/killmails`, {
-            params: new HttpParams()
-              .set('cached', JSON.stringify(killmailIds))
-              .set('filters', JSON.stringify(filter))
-              .set('limit', JSON.stringify(limit))
-              .set('skip', JSON.stringify(skip))
+          return this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
+            // cached: killmailIds,
+            filter, limit, skip, fields,
           })
             .switchMap((killmails: Killmail[]) => {
               return this.db
                 .insert('killmails', killmails)
                 .reduce((acc, curr) => [...acc, curr], [])
-                .map((items) => {
-                  return new killmailCollection.AddKillmailsSuccess(items);
+                .map(mails => {
+                  return new killmailCollection.GetSuccess(mails);
                 })
                 .catch((err) => of(new killmailCollection.GetFail(err)));
             });
