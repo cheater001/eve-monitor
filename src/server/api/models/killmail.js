@@ -14,7 +14,18 @@ const KillmailSchema = new Schema({
   war_id: {
     type: Number,
   },
-  victim: Schema.Types.Mixed,
+  victim: {
+    character_id: Number,
+    corporation_id: Number,
+    damage_taken: Number,
+    items: Array,
+    position: {
+      x: Number,
+      y: Number,
+      z: Number,
+    },
+    ship_type_id: { type: Number, ref: 'TypeID' }
+  },
   attackers: Schema.Types.Mixed,
   zkb: Schema.Types.Mixed,
 });

@@ -7,26 +7,34 @@ exports.listAllKillmails = function (req, res) {
   const fields = req.body.fields;
   const filters = req.body.filters || {};
   const cached = req.body.cached;
+  const sort = req.body.sort || { killmail_time: -1 };
 
   let query = Killmail.find(filters)
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .sort(sort);
 
-  if (fields) {
+  if ( fields ) {
     query.select(fields);
   }
 
-  if (cached) {
+  if ( cached ) {
     query.where('killmail_id').nin(cached);
   }
 
-  query.exec((err, data) => {
-    if ( err ) {
-      res.send(err);
-    }
+  query
+    .populate('victim.ship_type_id')
+    .exec((err, data) => {
+      if ( err ) {
+        res.send(err);
+      }
 
-    res.json(data);
-  })
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log('listAllKillmails');
+      console.log(err);
+    })
 };
 
 exports.readKillmail = function (req, res) {

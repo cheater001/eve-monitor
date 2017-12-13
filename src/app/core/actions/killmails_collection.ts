@@ -62,7 +62,11 @@ export class Get implements Action {
 export class GetSuccess implements Action {
   readonly type = GET_SUCCESS;
 
-  constructor(public payload: Killmail[]) {}
+  constructor(public payload: {
+    selected: Killmail[],
+    fetched: Killmail[]
+    ids: number[]
+  }) {}
 }
 
 export class GetFail implements Action {

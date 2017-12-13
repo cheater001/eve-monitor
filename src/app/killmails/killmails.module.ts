@@ -1,6 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+
+import {
+  MatDatepickerModule,
+  MatNativeDateModule,
+} from '@angular/material';
+
+import { CdkTableModule } from '@angular/cdk/table';
 
 import { MaterialModule } from '../material';
 
@@ -13,7 +21,13 @@ import { KillmailsListComponent } from './components/killmail-list/killmail-list
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+
     MaterialModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    CdkTableModule,
+
     RouterModule.forChild([
       {
         path: '',
@@ -34,4 +48,5 @@ import { KillmailsListComponent } from './components/killmail-list/killmail-list
     KillmailsListComponent,
   ]
 })
-export class KillmailsModule { }
+export class KillmailsModule {
+}

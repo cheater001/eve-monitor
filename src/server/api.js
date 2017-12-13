@@ -3,6 +3,7 @@ const cors = require('cors');
 
 const mongoose = require('mongoose');
 const Killmail = require('./api/models/killmail');
+const TypeID = require('./api/models/typeID');
 const bodyParser = require('body-parser');
 
 const killmails = require('./api/controllers/killmails');
@@ -22,10 +23,5 @@ app.route('/killmails')
 
 app.route('/killmails/:killmail_id')
   .get(killmails.readKillmail);
-
-// app.route('/killmails')
-//   .get((req, res) => {
-//     res.send('asdasda');
-//   });
 
 app.listen(4000);

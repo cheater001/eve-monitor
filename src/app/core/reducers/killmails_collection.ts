@@ -14,7 +14,6 @@ const initialState: State = {
 
 export function reducer(state = initialState, action: killmails.Actions): State {
   switch (action.type) {
-    case killmails.LOAD:
     case killmails.GET: {
       return {
         ...state,
@@ -22,20 +21,11 @@ export function reducer(state = initialState, action: killmails.Actions): State 
       };
     }
 
-    case killmails.LOAD_SUCCESS:
     case killmails.GET_SUCCESS: {
       return {
         loaded: true,
         loading: false,
-        ids: action.payload.map(killmail => killmail.killmail_id),
-      };
-    }
-
-    case killmails.ADD_KILLMAILS_SUCCESS: {
-      console.log(action.payload);
-      return {
-        ...state,
-        ids: action.payload,
+        ids: action.payload.ids,
       };
     }
 

@@ -5,7 +5,10 @@ const io = require('socket.io')(http);
 
 const mongoose = require('mongoose');
 require('./api/models/killmail');
+require('./api/models/typeID');
+
 const Killmail = mongoose.model('Killmail');
+const TypeID = mongoose.model('TypeID');
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
@@ -30,6 +33,7 @@ http.listen(3000, function(){
       let payload = JSON.parse(body);
 
       payload.killmail_time = new Date(payload.killmail_time);
+      payload._id = payload.killmail_id;
 
       if ( payload.package ) {
         io.emit('killmail', {

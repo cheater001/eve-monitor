@@ -1,0 +1,40 @@
+/* Structure */
+.killmaill-list-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+}
+
+.killmail-table {
+  flex: 1 1 auto;
+  overflow: auto;
+  max-height: 500px;
+}
+
+.killmail-header-row,
+.killmail-row {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  align-items: center;
+  padding: 16px;
+}
+
+.killmail-row:last-child {
+  border-bottom: none;
+}
+
+.killmail-cell,
+.killmail-header-cell {
+  flex: 1;
+}
+
+.killmail-header-cell {
+  font-size: 12px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.killmail-cell {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.87);
+}

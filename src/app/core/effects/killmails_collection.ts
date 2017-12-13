@@ -6,20 +6,21 @@ import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/toArray';
 import 'rxjs/add/operator/reduce';
+import 'rxjs/add/operator/withLatestFrom';
 import { Injectable } from '@angular/core';
-import { Action } from '@ngrx/store';
+import { Action, Store, } from '@ngrx/store';
 import { Effect, Actions } from '@ngrx/effects';
 import { Database } from '@ngrx/db';
 import { Observable } from 'rxjs/Observable';
 import { defer } from 'rxjs/observable/defer';
 import { of } from 'rxjs/observable/of';
 
-import { HttpClient, HttpParams, } from '@angular/common/http';
-
-import { ZkillboardService } from '../services/zkillboard';
+import { HttpClient, } from '@angular/common/http';
 
 import * as killmailCollection from '../actions/killmails_collection';
 import { Killmail } from '../models/killmail';
+import * as fromRoot from '../../reducers';
+import * as fromCollection from '../reducers/killmails_collection';
 
 @Injectable()
 export class KillmailsCollectionEffects {
@@ -54,92 +55,71 @@ export class KillmailsCollectionEffects {
     .ofType(killmailCollection.GET)
     .map((action: killmailCollection.Get) => action.payload)
     .switchMap(payload => {
-      const predicates = [];
       // TODO need to import default values from backend models
-      const filter     = payload.filter;
-      const limit      = payload.limit || 10;
-      const skip       = payload.skip;
-      const fields     = payload.fields;
-      const values     = (k, value) => ({k, v: JSON.parse(JSON.stringify(value))});
-      const predicate  = (key, value, handler) => {
-        return (({k, v}) => {
-          return cursor => handler(cursor, k, v);
-        })(values(key, value));
-      };
+      const filters = payload.filters;
+      const limit   = payload.limit || 10;
+      const skip    = payload.skip;
+      const fields  = payload.fields;
 
-      if (filter) {
-        for (const key in filter) {
-          const value = filter[key];
-
-          // TODO Implement field.field accessor;
-          if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            predicates.push(predicate(key, value, (cursor, k, v) => {
-              return cursor[k] === v;
-            }));
-          } else if (typeof value === 'object') {
-            for (const valueKey in value) {
-              const valuePredicates = [];
-
-              if (valueKey === '$in') {
-                valuePredicates.push((cursor, k, v) => {
-                  return v.indexOf(cursor[k]) > -1;
-                });
-              } else if (valueKey === '$gt') {
-                valuePredicates.push((cursor, k, v) => {
-                  return cursor[k] > v;
-                });
-              } else if (valueKey === '$lt') {
-                valuePredicates.push((cursor, k, v) => {
-                  return cursor[k] < v;
-                });
-              }
-
-              predicates.push(predicate(key, value[valueKey], (cursor, k, v) => {
-                for (let i = 0; i < valuePredicates.length; i++) {
-                  if (!valuePredicates[i](cursor, k, v)) {
-                    return false;
-                  }
-                }
-
-                return true;
-              }));
-            }
-          }
-        }
-      }
-
-      return this.db
-        .query('killmails', (cursor) => {
-          for (let i = 0; i < predicates.length; i++) {
-            if (!predicates[i](cursor)) {
-              return false;
-            }
-          }
-
-          return true;
-        })
-        .toArray()
+      return this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
+        fields: 'killmail_id',
+        filters, limit, skip
+      })
         .map((killmails: Killmail[]) => killmails.map(killmail => killmail.killmail_id))
-        .switchMap((killmailIds: number[]) => {
-          return this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
-            // cached: killmailIds,
-            filter, limit, skip, fields,
+        .switchMap((ids: number[]) => {
+          const sortedIds = [...ids];
+
+          return this.db.query('killmails', cursor => {
+            const index = ids.indexOf(cursor.killmail_id);
+            const result = index > -1;
+
+            if (result) {
+              ids.splice(index, 1);
+            }
+
+            return result;
           })
-            .switchMap((killmails: Killmail[]) => {
-              return this.db
-                .insert('killmails', killmails)
-                .reduce((acc, curr) => [...acc, curr], [])
-                .map(mails => {
-                  return new killmailCollection.GetSuccess(mails);
+            .toArray()
+            .switchMap((storedKillmails: Killmail[]) => {
+              const killmails$ = ids.length
+                ? this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
+                  filters: {
+                    killmail_id: {$in: ids}
+                  },
+                  limit, skip,
+                })
+                : of([]);
+
+              return killmails$
+                .map((fetchedKillmails: Killmail[]) => {
+                  return new killmailCollection.GetSuccess({
+                    selected: [...storedKillmails, ...fetchedKillmails],
+                    fetched: fetchedKillmails,
+                    ids: sortedIds,
+                  });
                 })
                 .catch((err) => of(new killmailCollection.GetFail(err)));
             });
         });
     });
 
+  @Effect({dispatch: false})
+  getKillmailsSuccess$ = this.actions$
+    .ofType(killmailCollection.GET_SUCCESS)
+    .map((action: killmailCollection.GetSuccess) => {
+      return action.payload.fetched;
+    })
+    .do(killmails => {
+      this.db
+        .insert('killmails', killmails)
+        .reduce((acc, curr) => [...acc, curr], [])
+        .catch((err) => of(new killmailCollection.GetFail(err)))
+        .subscribe(() => {});
+    });
+
   constructor(private actions$: Actions,
               private db: Database,
-              private zkillboard: ZkillboardService,
-              private http: HttpClient) {
+              private http: HttpClient,
+              private store: Store<fromCollection.State>) {
   }
 }

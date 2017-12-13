@@ -1,6 +1,6 @@
 import 'rxjs/add/operator/let';
 import { Observable } from 'rxjs/Observable';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ViewEncapsulation, } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../reducers';
@@ -13,6 +13,7 @@ import { ZkillboardService } from '../services/zkillboard';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   template: `
     <bc-layout>
       <app-sidenav [open]="showSidenav$ | async">
@@ -28,10 +29,12 @@ import { ZkillboardService } from '../services/zkillboard';
       <bc-toolbar (openMenu)="openSidenav()">
         EVE Monitor
       </bc-toolbar>
-
-      <router-outlet></router-outlet>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
     </bc-layout>
   `,
+  styleUrls: ['./app.scss'],
 })
 export class AppComponent {
   showSidenav$: Observable<boolean>;

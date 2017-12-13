@@ -1,6 +1,9 @@
-import { Component, Input, OnInit, } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewContainerRef, } from '@angular/core';
 
-import { Killmail, } from '../../../core/models/killmail';
+import { KillmailDataSource } from '../../killmail-data-source';
+
+import { Store } from '@ngrx/store';
+import * as fromKillmails from '../../../core/reducers/killmails';
 
 @Component({
   selector: 'app-killmails-list',
@@ -8,11 +11,14 @@ import { Killmail, } from '../../../core/models/killmail';
   styleUrls: ['./killmail-list.component.scss']
 })
 export class KillmailsListComponent implements OnInit {
-  @Input() killmails: Killmail[];
+  @ViewChildren('cdkrow', {read: ViewContainerRef}) containers;
 
-  constructor() { }
+  dataSource: KillmailDataSource | null;
+
+  constructor(private store: Store<fromKillmails.State>) {
+    this.dataSource = new KillmailDataSource(store);
+  }
 
   ngOnInit() {
   }
-
 }
