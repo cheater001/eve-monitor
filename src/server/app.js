@@ -18,7 +18,7 @@ mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
 io.set('origins', 'http://localhost:4210');
 io.on('connection', () => console.log('a user connected'));
 
-http.listen(3000, function(){
+http.listen(3000, function () {
   console.log('Listening on *:3000');
 });
 
@@ -32,18 +32,19 @@ http.listen(3000, function(){
     res.on('end', function () {
       let payload = JSON.parse(body);
 
-      payload.killmail_time = new Date(payload.killmail_time);
-      payload._id = payload.killmail_id;
-
       if ( payload.package ) {
         io.emit('killmail', {
           killID: payload.package.killID,
           killmail: payload.package.killmail,
         });
 
-        const killmail = new Killmail(payload.package.killmail);
+        const killmail = new Killmail(Object.assign({}, payload.package.killmail, { _id: payload.package.killID }));
 
-        killmail.save()
+        killmail.save(err => {
+          if ( err ) {
+            console.log(err);
+          }
+        })
           .then(() => {
             console.log(`Killmail ${payload.package.killID} INSERTED to collection.`);
           })
