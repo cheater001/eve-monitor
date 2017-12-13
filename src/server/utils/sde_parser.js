@@ -11,6 +11,7 @@ mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
 });
 
 mongoose.connection.on('connected', function () {
+  // typeIDs.yaml
   yaml.read('../../assets/sde/typeIDs.yaml', null, (err, data) => {
     let count = 0;
     const total = Object.keys(data).length;
