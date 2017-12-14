@@ -15,7 +15,7 @@ mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
   useMongoClient: true,
 });
 
-io.set('origins', 'http://localhost:4210');
+io.set('origins', 'http://localhost:4210 http://172.104.130.239:80');
 io.on('connection', () => console.log('a user connected'));
 
 http.listen(3000, function () {
