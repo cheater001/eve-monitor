@@ -1,6 +1,31 @@
 const mongoose = require('mongoose');
 const Killmail = mongoose.model('Killmail');
 
+exports.listAllKillmailsIds = function(req, res) {
+  const skip = req.body.skip || 0;
+  const limit = req.body.limit || 10;
+  const filters = req.body.filters || {};
+  const sort = req.body.sort || { killmail_time: -1 };
+
+  let query = Killmail.find(filters)
+    .skip(skip)
+    .limit(limit)
+    .sort(sort)
+    .select('_id');
+
+  query
+    .exec((err, data) => {
+      if ( err ) {
+        res.send(err);
+      }
+
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+};
+
 exports.listAllKillmails = function (req, res) {
   const skip = req.body.skip || 0;
   const limit = req.body.limit || 10;
@@ -19,11 +44,11 @@ exports.listAllKillmails = function (req, res) {
   }
 
   if ( cached ) {
-    query.where('killmail_id').nin(cached);
+    query.where('_id').nin(cached);
   }
 
   query
-    .populate('victim.ship_type_id')
+    .populate({path: 'victim.ship', select: '_id name groupID graphicID factionID'})
     .exec((err, data) => {
       if ( err ) {
         res.send(err);
@@ -32,16 +57,15 @@ exports.listAllKillmails = function (req, res) {
       res.json(data);
     })
     .catch((err) => {
-      console.log('listAllKillmails');
       console.log(err);
     })
 };
 
 exports.readKillmail = function (req, res) {
-  const id = req.params.killmail_id;
-  const fields = req.query.fields || 'killmail_id killmail_time solar_system_id';
+  const id = req.params._id;
+  const fields = req.query.fields || '_id';
 
-  let query = Killmail.findOne({ killmail_id: id });
+  let query = Killmail.findOne({ _id: id });
 
   query
     .select(fields)

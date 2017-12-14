@@ -13,6 +13,17 @@
       </cdk-cell>
     </ng-container>
 
+    <!-- Ship Column -->
+    <ng-container cdkColumnDef="Victim">
+      <cdk-header-cell *cdkHeaderCellDef class="killmail-header-cell">
+        Victim
+      </cdk-header-cell>
+      <cdk-cell *cdkCellDef="let row" class="killmail-cell victim">
+        <img src="{{ row.victim.ship.images.sm }}" alt="">
+        {{ row.victim.ship.name }}
+      </cdk-cell>
+    </ng-container>
+
     <ng-container cdkColumnDef="killmailTime">
       <cdk-header-cell *cdkHeaderCellDef class="killmail-header-cell">
         Time
@@ -43,8 +54,8 @@
     <!--</cdk-cell>-->
     <!--</ng-container>-->
 
-    <cdk-header-row *cdkHeaderRowDef="['killmailId', 'killmailTime']" class="killmail-header-row"></cdk-header-row>
-    <cdk-row *cdkRowDef="let row; columns: ['killmailId', 'killmailTime'];" class="killmail-row"></cdk-row>
+    <cdk-header-row *cdkHeaderRowDef="['Victim', 'killmailTime']" class="killmail-header-row"></cdk-header-row>
+    <cdk-row *cdkRowDef="let row; columns: ['Victim', 'killmailTime'];" class="killmail-row"></cdk-row>
   </cdk-table>
 </div>
 

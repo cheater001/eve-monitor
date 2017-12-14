@@ -7,4 +7,5 @@ export const environment = {
   production: false,
   socket_path: 'http://172.104.130.239:3000',
   api_path: 'http://localhost:4000',
+  images_path: 'https://image.eveonline.com',
 };

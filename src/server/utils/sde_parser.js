@@ -13,9 +13,6 @@ mongoose.connect('mongodb://evemonitor:Manul844@172.104.130.239/killmails', {
 mongoose.connection.on('connected', function () {
   // typeIDs.yaml
   yaml.read('../../assets/sde/typeIDs.yaml', null, (err, data) => {
-    let count = 0;
-    const total = Object.keys(data).length;
-
     for ( key in data ) {
       let document = data[key];
 
@@ -24,11 +21,11 @@ mongoose.connection.on('connected', function () {
       const typeID = new TypeID(document);
 
       typeID.save()
-        .then(((_id, _count) => {
+        .then(((_id) => {
           return () => {
-            console.log(`${_id} Inserted. ${_count} of ${total}`);
+            console.log(`${_id} Inserted`);
           };
-        })(key, ++count))
+        })(key))
         .catch(e => {
           console.log(`Type was NOT INSERTED to collection.`);
           console.log(e);

@@ -18,10 +18,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
+app.route('/killmails-ids')
+  .post(killmails.listAllKillmailsIds);
+
 app.route('/killmails')
   .post(killmails.listAllKillmails);
 
-app.route('/killmails/:killmail_id')
+app.route('/killmails/:_id')
   .get(killmails.readKillmail);
 
 app.listen(4000);

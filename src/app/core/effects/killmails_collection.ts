@@ -7,6 +7,7 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/toArray';
 import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/pluck';
 import { Injectable } from '@angular/core';
 import { Action, Store, } from '@ngrx/store';
 import { Effect, Actions } from '@ngrx/effects';
@@ -53,24 +54,22 @@ export class KillmailsCollectionEffects {
   @Effect()
   getKillmails$: Observable<Action> = this.actions$
     .ofType(killmailCollection.GET)
-    .map((action: killmailCollection.Get) => action.payload)
-    .switchMap(payload => {
-      // TODO need to import default values from backend models
+    .pluck('payload')
+    .switchMap((payload: any) => {
       const filters = payload.filters;
       const limit   = payload.limit || 10;
       const skip    = payload.skip;
       const fields  = payload.fields;
 
-      return this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
-        fields: 'killmail_id',
+      return this.http.post<Killmail[]>(`${environment.api_path}/killmails-ids`, {
         filters, limit, skip
       })
-        .map((killmails: Killmail[]) => killmails.map(killmail => killmail.killmail_id))
+        .map((killmails: Killmail[]) => killmails.map(killmail => killmail._id))
         .switchMap((ids: number[]) => {
           const sortedIds = [...ids];
 
           return this.db.query('killmails', cursor => {
-            const index = ids.indexOf(cursor.killmail_id);
+            const index  = ids.indexOf(cursor._id);
             const result = index > -1;
 
             if (result) {
@@ -84,9 +83,9 @@ export class KillmailsCollectionEffects {
               const killmails$ = ids.length
                 ? this.http.post<Killmail[]>(`${environment.api_path}/killmails`, {
                   filters: {
-                    killmail_id: {$in: ids}
+                    _id: {$in: ids}
                   },
-                  limit, skip,
+                  limit, skip, fields,
                 })
                 : of([]);
 
@@ -114,7 +113,8 @@ export class KillmailsCollectionEffects {
         .insert('killmails', killmails)
         .reduce((acc, curr) => [...acc, curr], [])
         .catch((err) => of(new killmailCollection.GetFail(err)))
-        .subscribe(() => {});
+        .subscribe(() => {
+        });
     });
 
   constructor(private actions$: Actions,

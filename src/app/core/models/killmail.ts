@@ -1,4 +1,5 @@
 export interface Killmail {
+  _id: number;
   killmail_id: number;
   killmail_time: string;
   solar_system_id: number;

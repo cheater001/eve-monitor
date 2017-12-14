@@ -37,4 +37,13 @@
 .killmail-cell {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.87);
+
+  &.victim {
+    img {
+      vertical-align: bottom;
+      width: 43px;
+      height: 47px;
+      margin: -14px 0 -14px -14px;
+    }
+  }
 }

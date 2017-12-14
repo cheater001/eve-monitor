@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const KillmailSchema = new Schema({
-  _id: Number,
+  _id: {
+    type: Number,
+  },
   killmail_id: {
     type: Number,
   },
@@ -25,10 +27,17 @@ const KillmailSchema = new Schema({
       y: Number,
       z: Number,
     },
-    ship_type_id: { type: Number, ref: 'TypeID' }
+    ship_type_id: Number,
   },
   attackers: Schema.Types.Mixed,
   zkb: Schema.Types.Mixed,
+}, { toJSON: { virtuals: true } });
+
+KillmailSchema.virtual('victim.ship', {
+  ref: 'TypeID',
+  localField: 'victim.ship_type_id',
+  foreignField: '_id',
+  justOne: true,
 });
 
 

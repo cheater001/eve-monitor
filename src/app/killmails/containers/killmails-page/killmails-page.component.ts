@@ -79,9 +79,9 @@ export class KillmailsPageComponent implements OnInit {
     // }));
 
     this.store.dispatch(new killmailsCollection.Get({
-      limit: 50,
+      limit: 10,
       filters: {
-        'attackers.character_id': 1192491827,
+        // 'attackers.character_id': 1192491827,
       }
     }));
   }
